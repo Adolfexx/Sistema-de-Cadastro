@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{alunos/fragments/head :: head('Cadastro de Alunos')}"></head>
+<body>
+<div class="container">
+  <h1>Cadastro de Alunos</h1>
+  <a th:href="@{/alunos/novo}" class="btn btn-primary">Novo Aluno</a>
+
+  <div class="alert alert-success" th:if="${mensagem}">
+    <span th:text="${mensagem}"></span>
+  </div>
+  <div class="alert alert-danger" th:if="${mensagemErro}">
+    <span th:text="${mensagemErro}"></span>
+  </div>
+
+
+  <div class="task-counter">
+    Você tem <strong th:text="${totalAlunos}">0</strong> alunos
+    (<span th:text="${totalAtivos}">0</span> ativos,
+    <span th:text="${totalInativos}">0</span> inativos)
+  </div>
+
+
+  <div class="filtros">
+    <a th:href="@{/alunos}" class="btn btn-filtro"
+       th:classappend="${filtroAtivo == 'todos'} ? ' btn-filtro-ativo' : ''">Todos</a>
+    <a th:href="@{/alunos(filtro='ativos')}" class="btn btn-filtro"
+       th:classappend="${filtroAtivo == 'ativos'} ? ' btn-filtro-ativo' : ''">Ativos</a>
+    <a th:href="@{/alunos(filtro='inativos')}" class="btn btn-filtro"
+       th:classappend="${filtroAtivo == 'inativos'} ? ' btn-filtro-ativo' : ''">Inativos</a>
+  </div>
+
+  <div th:if="${#lists.isEmpty(alunos)}" class="empty-message">
+    <p>Nenhum aluno encontrado.</p>
+  </div>
+
+  <table th:if="${!#lists.isEmpty(alunos)}" class="table">
+    <thead>
+    <tr>
+      <th>Nome</th><th>E-mail</th><th>Curso</th>
+      <th>Período</th><th>Status</th><th>Ações</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="aluno : ${alunos}">
+      <td th:text="${aluno.nome}"></td>
+      <td th:text="${aluno.email}"></td>
+      <td th:text="${aluno.curso}"></td>
+      <td th:text="${aluno.periodo} + 'º'"></td>
+      <td>
+        <span th:if="${aluno.ativo}" class="status status-ativo">Ativo</span>
+        <span th:unless="${aluno.ativo}" class="status status-inativo">Inativo</span>
+      </td>
+      <td class="actions">
+        <a th:href="@{/alunos/editar/{id}(id=${aluno.id})}" class="btn btn-secondary btn-sm">Editar</a>
+        <a th:href="@{/alunos/status/{id}(id=${aluno.id})}" class="btn btn-info btn-sm"
+           th:text="${aluno.ativo} ? 'Desativar' : 'Ativar'"></a>
+        <form th:action="@{/alunos/excluir/{id}(id=${aluno.id})}" method="post" style="display:inline;"
+              onsubmit="return confirm('Deseja excluir este aluno?');">
+          <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>
